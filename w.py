@@ -1,7 +1,7 @@
 #By Scott Cohen
 #There are no globals because I wanted to pass everything for the fun of it.
 import os, sys, argparse, shutil
-def dirf((cf,hf,l,sname,name,verbose,y,store)):
+def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 	REQ = []; b = []
 	lb = True; ln = True; it = False; id = False
 	for i,k in zip(l, range(0,len(l))):
@@ -97,8 +97,8 @@ def dirf((cf,hf,l,sname,name,verbose,y,store)):
 				i = 1
 	except IndexError:
 		print "ERROR:", REQ, "Incompatible Modules."	 
-	return cf, hf, REQ, sname,verbose,y,store
-def cgen((c,h,REQ,sname,verbose,y,store)): 
+	return cf, hf, REQ, sname,verbose,y,store,ll
+def cgen((c,h,REQ,sname,verbose,y,store,ll)): 
 	asd = ""
 	c = c.split(" ")
 	h = h.split(" ")
@@ -128,15 +128,16 @@ def cgen((c,h,REQ,sname,verbose,y,store)):
 	if verbose:
 		print "}\n"
 	fo.close()
-	return " ".join(c),REQ,sname,verbose,y,store
-def com((c,REQ,sname,verbose,y,store)): 
+	return " ".join(c),REQ,sname,verbose,y,store,ll
+def com((c,REQ,sname,verbose,y,store,ll)): 
 	a = ""
 	if sname:
 		a = sname
 	else:
 		for i in range(0, len(REQ)):
 			a = a + REQ[i][0]
-	os.system("gcc " + c + "a.c -o " + a)
+	print ll
+	os.system("gcc " + c + "a.c -o " + a + ll)
 	if store:
 		if verbose:
 			print "Source:" + os.getcwd() + "/" + a, "\nDestination: " + store + "/" + a 
@@ -144,7 +145,6 @@ def com((c,REQ,sname,verbose,y,store)):
 			shutil.move(os.getcwd() + "/" + a, store + "/" + a) 
 		except IOError as e:
 			print e, "\nCurrent directory will be used for storage instead."
-			
 	if verbose:
 		print "\nDone."
 	else:
@@ -176,6 +176,8 @@ def run(args):
 	a = []; b = []
 	name = ""
 	store = ""
+	llibrary = ""
+	sname = ""
 	if args.version:
 		print "M%dularity 1.0"
 	if args.verbose:
@@ -197,10 +199,10 @@ def run(args):
 		b = b.split(" ")
 	if args.name:
 		sname = args.name.pop()
-	else:
-		sname = None
 	if args.store:
 		store = args.store.pop()
+	if args.link_library:
+		llibrary = " -l" + " -l".join(args.link_library)
 	c = b, a
-	return "","",c,sname,name,args.verbose,args.yes,store  
+	return "","",c,sname,name,args.verbose,args.yes,store,llibrary  
 com(cgen(dirf(run(get_args()))))

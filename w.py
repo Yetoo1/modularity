@@ -42,20 +42,23 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
                                 	try:
                                         	with open(dir, "r") as fo:
                                                 	for line in fo:
-                                                        	if lb and "</DESC>" in line:
+                                                        	if lb and "</DESC>" in line and not "#" in line:
 									id = False 
-								if "</INFO>" in line:
+								if "</INFO>" in line and not "#" in line:
                                                                 	it = False
                                                         	if id:
 									print line, 
 								if it:
-                                                                	if "REQ=" in line:
+                                                                	if "REQ=" in line and not "#" in line:
                                                                         	REQ.append((a.split("/")[len(a.split("/"))-1],line[4:len(line)-1]))
+								if it:
+									if "LIB=" in line and not "#" in line:
+										ll = ll + "-l" + line[4:len(line)-1]
 								if lb:
 									for i in l[1]:
 										if i == a[len(a)-1:] and "<DESC>" in line:  
 												id = True
-								if "<INFO>" in line:
+								if "<INFO>" in line and not "#" in line:
                                                                 	it = True
                                                 	fo.close()
                                 	except IOError:
@@ -136,8 +139,9 @@ def com((c,REQ,sname,verbose,y,store,ll)):
 	else:
 		for i in range(0, len(REQ)):
 			a = a + REQ[i][0]
-	print ll
-	os.system("gcc " + c + "a.c -o " + a + ll)
+	if ll[3:] == "":
+		ll = ll[3:]
+	os.system("gcc " + c + "a.c -o " + a + " " + ll)
 	if store:
 		if verbose:
 			print "Source:" + os.getcwd() + "/" + a, "\nDestination: " + store + "/" + a 
@@ -172,9 +176,8 @@ def get_args():
 	args = p.parse_args()
         return p.parse_args()
 def run(args):
-	#MAKE SURE EACH SECTION ISN'T DOING MORE WORK THAN IT SHOULD
 	a = []; b = []
-	name = ""
+	modname = "";
 	store = ""
 	llibrary = ""
 	sname = ""
@@ -182,12 +185,10 @@ def run(args):
 		print "M%dularity 1.0"
 	if args.verbose:
                 print "Verbose mode enabled..."
-        else:
-		verbose = False
 	if args.modn:
-		name = " ".join(args.modn)
-		print "Selecting:", name
-		name = name.split(" ")
+		modname = " ".join(args.modn)
+		print "Selecting:", modname
+		modname = modname.split(" ")
 	if args.modl_info:
 		a = " ".join(args.modl_info)
 		print "Listing info of: ", a
@@ -202,7 +203,7 @@ def run(args):
 	if args.store:
 		store = args.store.pop()
 	if args.link_library:
-		llibrary = " -l" + " -l".join(args.link_library)
+		llibrary = "-l" + " -l".join(args.link_library) + " "
 	c = b, a
-	return "","",c,sname,name,args.verbose,args.yes,store,llibrary  
+	return "","",c,sname,modname,args.verbose,args.yes,store,llibrary  
 com(cgen(dirf(run(get_args()))))

@@ -4,7 +4,7 @@
 import os, sys, argparse, shutil
 def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 	REQ = []; b = []
-	lb = True; ln = True; it = False; id = False
+	lb = True; ln = True; it = False; id = False #lb is for mod-info
 	for i,k in zip(l, range(0,len(l))):
 		if i == [] and k == 1:
 			lb = False
@@ -44,7 +44,7 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
                                 		try:
                                         		with open(dir, "r") as fo:
                                                 		for line in fo:
-                                                        		if lb and "</DESC>" in line and not "#" in line:
+								        if lb and "</DESC>" in line and not "#" in line:
 										id = False 
 									if "</INFO>" in line and not "#" in line:
                                                                 		it = False
@@ -62,8 +62,8 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 													ll = ll + " -l" + i
 									if lb:
 										for i in l[1]:
-											if i == a[len(a)-1:] and "<DESC>" in line:  
-													id = True
+											if i == a.split("/")[len(a.split("/"))-1] and "<DESC>" in line or i == "?0" and "<DESC>" in line:
+												id = True
 									if "<INFO>" in line and not "#" in line:
                                                                 		it = True
                                                 		fo.close()
@@ -77,7 +77,6 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 			else:
 				if verbose:
 					print "Skipping",a.split("/")[len(a.split("/"))-1]
-
 	except OSError:
 		print "An error occured during the directory search."
 	if ln and not y:

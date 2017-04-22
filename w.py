@@ -4,7 +4,7 @@
 import os, sys, argparse, shutil
 def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 	REQ = []; b = []
-	lb = True; ln = True; it = False; id = False #lb is for mod-info
+	lb = True; ln = True; it = False; id = False 
 	for i,k in zip(l, range(0,len(l))):
 		if i == [] and k == 1:
 			lb = False

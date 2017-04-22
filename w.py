@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.7
 #By Scott Cohen
 #There are no globals because I wanted to pass everything for the fun of it.
 import os, sys, argparse, shutil
@@ -14,7 +15,7 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 	a = os.getcwd() + "/mod/"		
 	if not os.path.exists(a):
 		if verbose:
-			print "mod directory doesn't exist.\nCreating it.."
+			print "Mod directory doesn't exist.\nCreating it..."
 		os.makedirs(a)
 	try:
 		for a, dirs, files in os.walk(a):
@@ -24,50 +25,59 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 						print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a
 				if "?0" in l[0]:
 					print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a  
-			for f in files:
-				dir = a + "/" + f
-				if a not in b and not all(n is None for n in name) == True: 
-					break
- 				elif dir[len(dir)-2:] == ".c":
-                                	cf = dir + " " + cf
-					if verbose:
-						print cf
-                        	elif dir[len(dir)-2:] == ".h":
-                                	hf = hf + dir + " "
-					if verbose:
-						print hf
-                        	elif dir[len(dir)-4:] == "info":
-					if verbose:
-						print dir
-                                	try:
-                                        	with open(dir, "r") as fo:
-                                                	for line in fo:
-                                                        	if lb and "</DESC>" in line and not "#" in line:
-									id = False 
-								if "</INFO>" in line and not "#" in line:
-                                                                	it = False
-                                                        	if id:
-									print line, 
-								if it:
-                                                                	if "REQ=" in line and not "#" in line:
-                                                                        	REQ.append((a.split("/")[len(a.split("/"))-1],line[4:len(line)-1]))
-								if it:
-									if "LIB=" in line and not "#" in line:
-										ll = ll + "-l" + line[4:len(line)-1]
-								if lb:
-									for i in l[1]:
-										if i == a[len(a)-1:] and "<DESC>" in line:  
-												id = True
-								if "<INFO>" in line and not "#" in line:
-                                                                	it = True
-                                                	fo.close()
-                                	except IOError:
-                                        	print "info doesn't exist."
-				
-                        	else:
-                                	if verbose: 
-                                        	print dir, "Not a good extension!"
-                                	pass	
+			if not a.split("/")[len(a.split("/"))-1][:1] == ".":
+				for f in files:
+					dir = a + "/" + f
+					if a not in b and not all(n is None for n in name) == True: 
+						break
+ 					elif dir[len(dir)-2:] == ".c":
+                                		cf = dir + " " + cf
+						if verbose:
+							print cf
+                        		elif dir[len(dir)-2:] == ".h":
+                                		hf = hf + dir + " "
+						if verbose:
+							print hf
+                        		elif dir[len(dir)-4:] == "info":
+						if verbose:
+							print dir
+                                		try:
+                                        		with open(dir, "r") as fo:
+                                                		for line in fo:
+                                                        		if lb and "</DESC>" in line and not "#" in line:
+										id = False 
+									if "</INFO>" in line and not "#" in line:
+                                                                		it = False
+                                                        		if id:
+										print line, 
+									if it:
+                                                                		if "REQ=" in line and not "#" in line:
+                                                                        		REQ.append((a.split("/")[len(a.split("/"))-1],line[4:len(line)-1]))
+									if it:
+										if "LIB=" in line and not "#" in line:
+											for i in line.split(","):
+												if "LIB=" in i:
+													ll = ll + "-l" + i[4:len(line)-1]
+												else:
+													ll = ll + " -l" + i
+									if lb:
+										for i in l[1]:
+											if i == a[len(a)-1:] and "<DESC>" in line:  
+													id = True
+									if "<INFO>" in line and not "#" in line:
+                                                                		it = True
+                                                		fo.close()
+                                		except IOError:
+                                        		print "info doesn't exist."
+					
+                        		else:
+                                		if verbose: 
+                                        		print dir, "Not a good extension!"
+                                		pass	
+			else:
+				if verbose:
+					print "Skipping",a.split("/")[len(a.split("/"))-1]
+
 	except OSError:
 		print "An error occured during the directory search."
 	if ln and not y:

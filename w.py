@@ -39,8 +39,8 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 						if verbose:
 							print hf
                         		elif dir[len(dir)-4:] == "info":
-						if verbose:
-							print dir
+						if lb and dir.split("/")[len(a.split("/"))-1] in l[1] or "?0" in l[1] or verbose:
+							print dir, "\n"
                                 		try:
                                         		with open(dir, "r") as fo:
                                                 		for line in fo:

@@ -79,7 +79,7 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 					print "Skipping",a.split("/")[len(a.split("/"))-1]
 	except OSError:
 		print "An error occured during the directory search."
-	if ln and not y:
+	if ln or lb and not y:
 		ask = raw_input("Do you want to continue?(y/n) ")
 		if ask.lower() == "n":
 			exit()
@@ -216,3 +216,4 @@ def run(args):
 	c = b, a
 	return "","",c,sname,modname,args.verbose,args.yes,store,llibrary  
 com(cgen(dirf(run(get_args()))))
+

@@ -19,12 +19,10 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 		os.makedirs(a)
 	try:
 		for a, dirs, files in os.walk(a):
-			if ln:
-				for i in l[0]:
-					if i == a.split("/")[len(a.split("/"))-1]:
-						print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a
-				if "?0" in l[0]:
-					print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a  
+			if ln and a.split("/")[len(a.split("/"))-1] in l[0] or "?0" in l[0] and not a.split("/")[len(a.split("/"))-1] == "":
+				print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a
+			if lb and a.split("/")[len(a.split("/"))-1] in l[1] or "?0" in l[1] and not a.split("/")[len(a.split("/"))-1] == "":
+				print "Name: " + a.split("/")[len(a.split("/"))-1] + "\nPath: " + a
 			if not a.split("/")[len(a.split("/"))-1][:1] == ".":
 				for f in files:
 					dir = a + "/" + f
@@ -39,8 +37,8 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 						if verbose:
 							print hf
                         		elif dir[len(dir)-4:] == "info":
-						if lb and dir.split("/")[len(a.split("/"))-1] in l[1] or "?0" in l[1] or verbose:
-							print dir, "\n"
+						if verbose:
+							print dir
                                 		try:
                                         		with open(dir, "r") as fo:
                                                 		for line in fo:
@@ -49,7 +47,7 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 									if "</INFO>" in line and not "#" in line:
                                                                 		it = False
                                                         		if id:
-										print line, 
+										print line,
 									if it:
                                                                 		if "REQ=" in line and not "#" in line:
                                                                         		REQ.append((a.split("/")[len(a.split("/"))-1],line[4:len(line)-1]))
@@ -69,7 +67,6 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
                                                 		fo.close()
                                 		except IOError:
                                         		print "info doesn't exist."
-					
                         		else:
                                 		if verbose: 
                                         		print dir, "Not a good extension!"

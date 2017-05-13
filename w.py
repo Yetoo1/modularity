@@ -74,38 +74,40 @@ def dirf((cf,hf,l,sname,name,verbose,y,store,ll)):
 			else:
 				if verbose:
 					print "Skipping",a.split("/")[len(a.split("/"))-1]
+		for i in range(0, len(REQ)):
+                        if REQ[i][1] == "None" and not i == 0:
+                                for t in range(0,len(REQ)-i):
+                                        tmp = REQ[t]
+                                        REQ[t] = REQ[t-1]
+                                        REQ[t-1] = tmp
+		i = 1
+		try:
+                	while(not i == 0):
+                        	if len(REQ) == 1:
+                                	if verbose:
+						print "success", REQ[0]
+					break
+                        	if REQ[i][1] == REQ[i-1][0] and not REQ[i-1][0] == "None":
+                                	if verbose:
+                                        	print "success", REQ[i], REQ[i-1]
+                                	i += 1
+					if i == len(REQ):
+						i = 0
+                        	else:
+                                	if verbose:
+                                        	print "fail", REQ[i], REQ[i-1]
+                                	tmp = REQ[i]
+                                	REQ[i] = REQ[i+1]
+                                	REQ[i+1]=tmp
+                                	i = 1 #starts back at the beginning of the next check.
+        	except IndexError:
+                	print "ERROR:", REQ, "Incompatible Modules."
 	except OSError:
 		print "An error occured during the directory search."
 	if (ln or lb) and not y:
 		ask = raw_input("Do you want to continue?(y/n) ")
 		if ask.lower() == "n":
 			exit()
-	for i in range(0, len(REQ)):
-			if REQ[i][1] == "None" and not i == 0:
-				for t in range(0,len(REQ)-i): 
-					tmp = REQ[t]
-					REQ[t] = REQ[t-1]
-					REQ[t-1] = tmp
-	i = 1
-	try:
-		while(not i == 0):
-			if len(REQ) == 1:
-				break
-			if REQ[i][1] == REQ[i-1][0] and not REQ[i-1][0] == "None":
-				if verbose:
-					print "success", REQ[i], REQ[i-1]
-				i += 1
-				if i == len(REQ):
-					i = 0
-			else: 
-				if verbose:
-					print "fail", REQ[i], REQ[i-1]
-				tmp = REQ[i]
-				REQ[i] = REQ[i+1]
-				REQ[i+1]=tmp
-				i = 1
-	except IndexError:
-		print "ERROR:", REQ, "Incompatible Modules."	 
 	return cf, hf, REQ, sname,verbose,y,store,ll
 def cgen((c,h,REQ,sname,verbose,y,store,ll)): 
 	asd = ""
@@ -113,30 +115,24 @@ def cgen((c,h,REQ,sname,verbose,y,store,ll)):
 	h = h.split(" ")
 	fo = open("a.c", "w")
 	pt = ""
-	if verbose:
-		print "\n"
 	for i in range(0, len(h) - 1): 
 		fo.write("#include \"" + h[i] + "\"\n" + asd)
-		if verbose:
-			print "#include \"" + h[i] + "\"\n" + asd,
 	fo.write("int main(){")
-	if verbose:
-		print "int main(){"
 	for k in range(0, len(c) - 1):
 		if (c[k][len(c[k])-3:] == "m.c"):	
-			z = c[k].split("/")[len(c[k].split("/"))-2]
 			for x in range(0, len(REQ)):
-				if z == REQ[x][0] and x == 0: 
+				if c[k].split("/")[len(c[k].split("/"))-2] == REQ[x][0] and x == 0: 
 					pt = pt + REQ[x][0] + "m()"
-				if z == REQ[x][0] and x > 0:
+				if c[k].split("/")[len(c[k].split("/"))-2] == REQ[x][0] and x > 0:
 					pt = REQ[x][0] + "m(" + pt + ")"
-	fo.write(pt + ";")
-	if verbose:
-		print pt + ";"
-	fo.write("}\n")
-	if verbose:
-		print "}\n"
+	fo.write(pt + ";}\n")
 	fo.close()
+	if verbose:
+		print "Contents of 'a.c':",
+		with open("a.c", "r") as fo:
+			for line in fo:
+				print line,
+		fo.close()
 	return " ".join(c),REQ,sname,verbose,y,store,ll
 def com((c,REQ,sname,verbose,y,store,ll)): 
 	a = ""
@@ -213,4 +209,5 @@ def run(args):
 	c = b, a
 	return "","",c,sname,modname,args.verbose,args.yes,store,llibrary  
 com(cgen(dirf(run(get_args()))))
+
 
